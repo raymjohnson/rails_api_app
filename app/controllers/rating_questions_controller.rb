@@ -10,13 +10,14 @@ class RatingQuestionsController < ApplicationController
 
   def create
     body_content = request.body.read
-    return send_response(response, 400, nil) if body_content.empty?
-    @rating_question = RatingQuestion.create(question_params)
-    if new_question.persisted?
-      send_response(response, 201, @rating_question)
+    return send_response(response, 400, nil) if body_content.nil?
+
+    @rating_question = RatingQuestion.new(question_params)
+
+    if @rating_question.save
+      render :show, status: 201
     else
-      errors = { "errors" => @rating_question.errors.messages }
-      send_response(response, 422, errors )
+      render json: { errors: @rating_question.errors.messages }, status: 422
     end
   end
 
@@ -37,14 +38,8 @@ class RatingQuestionsController < ApplicationController
 
   private
 
-    def question_params
-      params.require(:rating_questions).permit(:title, :tag)
-    end
-
-    def send_response(response, status, body)
-      response.status = status
-      response.body = body.to_json
-      response
-    end
+  def question_params
+    params.require(:rating_question).permit(:title, :tag)
+  end
 
 end

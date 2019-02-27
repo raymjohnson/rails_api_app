@@ -5,13 +5,10 @@ RSpec.describe "GET /rating_questions" do
   let(:new_title) { "Hello World" }
   let(:new_tag) { "new tag" }
 
-  let!(:question) do
-    RatingQuestion.create!(title: new_title, tag: new_tag)
-  end
-
   context "when the request has a body" do
-    let!(:response) do
-      post "/rating_questions.json", params: { title: new_title, tag: new_tag }
+
+    before do
+      post "/rating_questions.json", params: { rating_question: { title: new_title, tag: new_tag } }
     end
 
     it "returns a 201 Created" do
@@ -19,6 +16,7 @@ RSpec.describe "GET /rating_questions" do
     end
 
     it "returns the new document" do
+      question = JSON.parse(response.body)
       expect(question.is_a?(Hash)).to eq(true)
       expect(question.key?("id")).to eq(true)
       expect(question["title"]).to eq(new_title)
@@ -27,18 +25,14 @@ RSpec.describe "GET /rating_questions" do
   end
 
   context "when the request has no body" do
-    let!(:response) do
-      post "/rating_questions.json"
-    end
-
     it "returns a 400 Bad Request" do
-      expect(response.status).to eq(400)
+      expect { post "/rating_questions.json", params: { rating_question: {} } }.to raise_error(ActionController::ParameterMissing)
     end
   end
 
   context "when the request has a blank title" do
-    let!(:response) do
-      post "/rating_questions.json", params: { title: "" }
+    before do
+      post "/rating_questions.json", params: { rating_question: { title: "" } }
     end
 
     it "returns a 422 Invalid Resource" do
@@ -46,7 +40,8 @@ RSpec.describe "GET /rating_questions" do
     end
 
     it "shows errors that the title cannot be blank" do
-      expect(response).to eq({"errors" => {"title" => ["can't be blank"]}})
+      error = JSON.parse(response.body)["errors"]
+      expect(error).to eq({"title" => ["can't be blank"]})
     end
   end
 end
