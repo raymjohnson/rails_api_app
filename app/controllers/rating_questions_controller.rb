@@ -1,11 +1,12 @@
 class RatingQuestionsController < ApplicationController
 
+  before_action :find_rating_question, only: [:show, :update, :destroy]
+
   def index
     @rating_questions = RatingQuestion.all
   end
 
   def show
-    @rating_question = RatingQuestion.find(params[:id])
     head 404 unless @rating_question
   end
 
@@ -18,18 +19,20 @@ class RatingQuestionsController < ApplicationController
     end
   end
 
-  # def update
-  #   @rating_question = RatingQuestion.find(params[:id])
-  #   return send_response(response, 404, nil) if @rating_question.nil?
-  #   send_response(response, 200, @rating_question)
-  # end
+  def update
+    if @rating_question.update(question_params)
+      redirect_to "/", notice: "Updated Successfully"
+    else
+      errors = @rating_question.errors.messages
+      redirect_to "/", notice: errors
+    end
+  end
 
   def destroy
-    rating_question = RatingQuestion.find(params[:id])
-    if rating_question.nil?
+    if @rating_question.nil?
       head 404
     else
-      rating_question.destroy
+      @rating_question.destroy
     end
   end
 
@@ -37,6 +40,10 @@ class RatingQuestionsController < ApplicationController
 
   def question_params
     params.require(:rating_question).permit(:title, :tag)
+  end
+
+  def find_rating_question
+    @rating_question = RatingQuestion.find(params[:id])
   end
 
 end
