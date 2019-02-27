@@ -6,14 +6,11 @@ class RatingQuestionsController < ApplicationController
 
   def show
     @rating_question = RatingQuestion.find(params[:id])
+    head 404 unless @rating_question
   end
 
   def create
-    body_content = request.body.read
-    return send_response(response, 400, nil) if body_content.nil?
-
     @rating_question = RatingQuestion.new(question_params)
-
     if @rating_question.save
       render :show, status: 201
     else
@@ -21,19 +18,23 @@ class RatingQuestionsController < ApplicationController
     end
   end
 
-  def update
-    @rating_question = RatingQuestion.find(params[:id])
-    return send_response(response, 404, nil) if @rating_question.nil?
-    send_response(response, 200, @rating_question)
-  end
+  # def update
+  #   @rating_question = RatingQuestion.find(params[:id])
+  #   return send_response(response, 404, nil) if @rating_question.nil?
+  #   send_response(response, 200, @rating_question)
+  # end
 
-  def edit
-    @rating_question = RatingQuestion.find(params[:id])
-  end
+  # def edit
+  #   @rating_question = RatingQuestion.find(params[:id])
+  # end
 
   def destroy
     rating_question = RatingQuestion.find(params[:id])
-    rating_question.destroy
+    if rating_question.nil?
+      head 404
+    else
+      rating_question.destroy
+    end
   end
 
   private

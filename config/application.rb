@@ -33,3 +33,5 @@ module Surveyor
     # the framework and any gems in your application.
   end
 end
+
+Mongoid.raise_not_found_error = false

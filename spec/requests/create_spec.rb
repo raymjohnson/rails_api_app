@@ -25,7 +25,7 @@ RSpec.describe "GET /rating_questions" do
   end
 
   context "when the request has no body" do
-    it "returns a 400 Bad Request" do
+    it "raises an error" do
       expect { post "/rating_questions.json", params: { rating_question: {} } }.to raise_error(ActionController::ParameterMissing)
     end
   end
