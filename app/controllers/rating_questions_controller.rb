@@ -24,10 +24,6 @@ class RatingQuestionsController < ApplicationController
   #   send_response(response, 200, @rating_question)
   # end
 
-  # def edit
-  #   @rating_question = RatingQuestion.find(params[:id])
-  # end
-
   def destroy
     rating_question = RatingQuestion.find(params[:id])
     if rating_question.nil?
