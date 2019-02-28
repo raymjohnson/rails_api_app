@@ -6,37 +6,38 @@ class RatingQuestionsController < ApplicationController
     @rating_questions = RatingQuestion.all
   end
 
-  def show
-    head 404 unless @rating_question
-  end
+  def show; end
 
   def create
     @rating_question = RatingQuestion.new(question_params)
     if @rating_question.save
-      render :show, status: 201
+      respond_to do |format|
+        format.html { redirect_to "/", notice: "Your question has been created." }
+        format.json { render :show, status: 201 }
+      end
     else
       render json: { errors: @rating_question.errors.messages }, status: 422
     end
   end
 
   def update
-    if @rating_question.update(question_params)
-      redirect_to "/", notice: "Updated Successfully"
-    else
-      errors = @rating_question.errors.messages
-      redirect_to "/", notice: errors
-    end
+    @rating_question.update(question_params)
+    render json: serialize_question(@rating_question)
   end
 
   def destroy
-    if @rating_question.nil?
-      head 404
-    else
-      @rating_question.destroy
-    end
+    @rating_question.destroy
   end
 
   private
+
+  def serialize_question(question)
+    {
+      id: question.id.to_s,
+      title: question.title,
+      tag: question.tag,
+    }
+  end
 
   def question_params
     params.require(:rating_question).permit(:title, :tag)
@@ -44,6 +45,7 @@ class RatingQuestionsController < ApplicationController
 
   def find_rating_question
     @rating_question = RatingQuestion.find(params[:id])
+    head 404 unless @rating_question
   end
 
 end
