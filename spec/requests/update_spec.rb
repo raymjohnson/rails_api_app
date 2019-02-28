@@ -3,17 +3,14 @@ require "rails_helper"
 RSpec.describe "PUT /ratingQuestions/:id" do
 
   let(:new_title) { "Hello World" }
-  let(:new_tag) { "new tag" }
+  let(:new_title) { "new tag" }
 
   context "when the question exists" do
 
-    before do
-      post "/rating_questions.json", params: { rating_question: { title: new_title, tag: new_tag } }
-    end
+    let!(:question) { RatingQuestion.create!(title: new_title, tag: new_title) }
 
     it "returns a 200 OK and only updates the title" do
-      question = JSON.parse(response.body)
-      put "/rating_questions/#{question["id"]}", params: { rating_question: { title: "Hello Mars" } }
+      put "/rating_questions/#{question["id"]}.json", params: { rating_question: { title: "Hello Mars" } }
       updated_question = JSON.parse(response.body)
       expect(response.status).to eq(200)
       expect(updated_question.is_a?(Hash)).to eq(true)

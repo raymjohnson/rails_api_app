@@ -11,10 +11,7 @@ class RatingQuestionsController < ApplicationController
   def create
     @rating_question = RatingQuestion.new(question_params)
     if @rating_question.save
-      respond_to do |format|
-        format.html { redirect_to "/", notice: "Your question has been created." }
-        format.json { render :show, status: 201 }
-      end
+      render :show, status: 201
     else
       render json: { errors: @rating_question.errors.messages }, status: 422
     end
@@ -22,7 +19,7 @@ class RatingQuestionsController < ApplicationController
 
   def update
     @rating_question.update(question_params)
-    render json: serialize_question(@rating_question)
+    render :show
   end
 
   def destroy
@@ -30,14 +27,6 @@ class RatingQuestionsController < ApplicationController
   end
 
   private
-
-  def serialize_question(question)
-    {
-      id: question.id.to_s,
-      title: question.title,
-      tag: question.tag,
-    }
-  end
 
   def question_params
     params.require(:rating_question).permit(:title, :tag)
