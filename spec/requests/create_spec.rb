@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "GET /rating_questions" do
+RSpec.describe "POST /rating_questions" do
 
   let(:new_title) { "Hello World" }
   let(:new_tag) { "new tag" }
@@ -11,12 +11,15 @@ RSpec.describe "GET /rating_questions" do
       post "/rating_questions.json", params: { rating_question: { title: new_title, tag: new_tag } }
     end
 
+    let!(:question) do
+      JSON.parse(response.body)
+    end
+
     it "returns a 201 Created" do
       expect(response.status).to eq(201)
     end
 
     it "returns the new document" do
-      question = JSON.parse(response.body)
       expect(question.is_a?(Hash)).to eq(true)
       expect(question.key?("id")).to eq(true)
       expect(question["title"]).to eq(new_title)
